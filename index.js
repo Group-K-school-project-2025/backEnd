@@ -40,11 +40,11 @@ checkDbConnection();
 
 // Serve HTML pages
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../registerPage.html'));
+  res.sendFile(path.join(__dirname, 'registerPage.html'));
 });
 
 app.get('/upload-template', (req, res) => {
-  res.sendFile(path.join(__dirname, '../templateUploadForm.html'));
+  res.sendFile(path.join(__dirname, 'templateUploadForm.html'));
 });
 
 app.get('/category-page', (req, res) => {
