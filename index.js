@@ -3,7 +3,8 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const path = require('path');
 const multer = require('multer');
-const fs = require('fs');
+const fs = require('fs'); 
+require('dotenv').config();
 
 const app = express();
 const port = 3001;
@@ -18,11 +19,12 @@ app.use('/images', express.static(imagesPath));
 
 // PostgreSQL connection
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'AMI',
-  password: '37322',
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT,
+  ssl: process.env.SSL
 });
 
 // Check database connection
