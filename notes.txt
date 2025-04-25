@@ -1,0 +1,63 @@
+"C:\Program Files\PostgreSQL\17\bin\psql.exe" -U postgres -h localhost -d AMI
+
+
+for connecting cmd with pgAdmin
+------------------------------
+\q
+
+exit of postgres
+-----------------
+
+git status
+
+Check github changes 
+----------------------
+git add .
+
+adding changes to github
+-------------
+git add <file-path>
+
+
+adding spechial part 
+---------------------------
+git commit -m "Your commit message"
+
+commit 
+------------------------------
+git push origin main
+
+sending files
+------------------------------
+
+git remote -v
+
+see git situation
+-----------------------------------
+
+git pull origin main
+
+get new update of github
+--------------------------------
+
+npm install express cors pg multer
+
+
+install things for upload picture
+
+----------------------------------------
+
+npm install bcrypt
+
+this library is for password security
+
+---------------------
+
+npm install jsonwebtoken
+
+token install
+
+-------------------
+npm install dotenv
+
+security part
