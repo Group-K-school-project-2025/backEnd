@@ -95,7 +95,7 @@ app.post('/upload-template', upload.single('image'), async (req, res) => {
   }
 });
 
-// Register new user
+// Register a new user
 app.post('/new', async (req, res) => {
   const { first_name, last_name, email, mobile, username, password } = req.body;
 
@@ -111,10 +111,9 @@ app.post('/new', async (req, res) => {
   }
 });
 
-// Login
+// Simple login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-
   try {
     const result = await pool.query(
       'SELECT * FROM users WHERE username = $1 AND password = $2',
@@ -132,29 +131,26 @@ app.post('/login', async (req, res) => {
   }
 });
 
+
+
+
 // Add item to cart
-// Endpoint to add cart items to the database
-app.post('/cart/:userId', async (req, res) => {
-  const userId = req.params.userId;
-  const { templateId, quantity } = req.body;
+// Assuming you have a cart_items table with user_id, template_id, and quantity columns
+app.post('/cart', async (req, res) => {
+  const { user_id, template_id, quantity } = req.body;
 
-  try {
-    // Insert cart item into the database
-    await pool.query(`
-      INSERT INTO cart_items (user_id, template_id, quantity)
-      VALUES ($1, $2, $3)
-    `, [userId, templateId, quantity]);
-
-    res.status(201).json({ message: 'Item added to cart' });
-  } catch (err) {
-    console.error('Error inserting item into cart:', err);
-    res.status(500).json({ error: 'Failed to add item to cart' });
+  if (!user_id || !template_id || quantity < 1) {
+    return res.status(400).json({ error: 'Invalid input data' });
   }
+
+  await pool.query(
+    'INSERT INTO cart_items (user_id, template_id, quantity) VALUES ($1, $2, $3)',
+    [user_id, template_id, quantity || 1]
+  );
 });
 
-
-
-// Get cart items
+// Getting shopping cart item for unique user
+// GET /cart/:userId - دریافت آیتم‌های سبد خرید برای یک کاربر خاص
 app.get('/cart/:userId', async (req, res) => {
   const userId = req.params.userId;
 
@@ -219,7 +215,9 @@ app.post('/submit-message', async (req, res) => {
 
 
 
+
 // Start server
 app.listen(port, () => {
   console.log(`✅ Server is running at http://localhost:${port}`);
 });
+
