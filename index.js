@@ -95,7 +95,7 @@ app.post('/upload-template', upload.single('image'), async (req, res) => {
   }
 });
 
-// Register a new user
+// Register new user
 app.post('/new', async (req, res) => {
   const { first_name, last_name, email, mobile, username, password } = req.body;
 
@@ -111,9 +111,10 @@ app.post('/new', async (req, res) => {
   }
 });
 
-// Simple login route
+// Login
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
+
   try {
     const result = await pool.query(
       'SELECT * FROM users WHERE username = $1 AND password = $2',
@@ -131,24 +132,29 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
 // Add item to cart
-// Assuming you have a cart_items table with user_id, template_id, and quantity columns
-app.post('/cart', async (req, res) => {
-  const { user_id, template_id, quantity } = req.body;
+// Endpoint to add cart items to the database
+app.post('/cart/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const { templateId, quantity } = req.body;
 
-  if (!user_id || !template_id || quantity < 1) {
-    return res.status(400).json({ error: 'Invalid input data' });
+  try {
+    // Insert cart item into the database
+    await pool.query(`
+      INSERT INTO cart_items (user_id, template_id, quantity)
+      VALUES ($1, $2, $3)
+    `, [userId, templateId, quantity]);
+
+    res.status(201).json({ message: 'Item added to cart' });
+  } catch (err) {
+    console.error('Error inserting item into cart:', err);
+    res.status(500).json({ error: 'Failed to add item to cart' });
   }
-
-  await pool.query(
-    'INSERT INTO cart_items (user_id, template_id, quantity) VALUES ($1, $2, $3)',
-    [user_id, template_id, quantity || 1]
-  );
 });
 
-// Getting shopping cart item for unique user
-// GET /cart/:userId - دریافت آیتم‌های سبد خرید برای یک کاربر خاص
+
+
+// Get cart items
 app.get('/cart/:userId', async (req, res) => {
   const userId = req.params.userId;
 
@@ -170,6 +176,47 @@ app.get('/cart/:userId', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch cart items' });
   }
 });
+
+// Submit design request
+app.post('/submit-form', async (req, res) => {
+  const { name, email, phone, deliveryDate, category, purpose } = req.body;
+
+  if (!name || !email || !phone || !deliveryDate || !category || !purpose) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    await pool.query(
+      'INSERT INTO requests (name, email, phone, delivery_date, category, purpose) VALUES ($1, $2, $3, $4, $5, $6)',
+      [name, email, phone, deliveryDate, category, purpose]
+    );
+    res.status(201).json({ message: 'Request submitted successfully' });
+  } catch (error) {
+    console.error('Error inserting form data:', error);
+    res.status(500).json({ message: 'Failed to submit form' });
+  }
+});
+
+//contact us
+app.post('/submit-message', async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+      return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+      await pool.query(
+          'INSERT INTO contactUs (name, email, message) VALUES ($1, $2, $3)',
+          [name, email, message]
+      );
+      res.status(201).json({ message: 'Message submitted successfully' });
+  } catch (error) {
+      console.error('Error inserting message data:', error);
+      res.status(500).json({ message: 'Failed to submit message' });
+  }
+});
+
 
 
 // Start server
